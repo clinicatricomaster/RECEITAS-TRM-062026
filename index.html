@@ -150,18 +150,18 @@
             #print-view { display:block !important; position:static !important; background:#fff !important; overflow:visible !important; }
             .print-controls { display:none !important; }
             body { background:#fff !important; margin:0 !important; padding:0 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-            .print-page { margin:0 !important; box-shadow:none !important; padding:0 !important; height:auto !important; overflow:visible !important; position:relative !important; }
-            .p-footer { position:fixed !important; bottom:15mm !important; left:15mm !important; right:15mm !important; margin-top:0 !important; padding-top:0 !important; }
+            .print-page { margin:0 !important; box-shadow:none !important; padding:15mm !important; min-height:100vh !important; overflow:visible !important; position:relative !important; display:flex !important; flex-direction:column !important; }
+            .p-footer { position:static !important; margin-top:auto !important; padding-top:24px !important; }
         }
         #print-view { font-family:'Inter',sans-serif; background:#f0f0f0; }
         .print-page { width:210mm; height:267mm; margin:20px auto; background:#fff; padding:15mm; box-shadow:0 0 15px rgba(0,0,0,0.12); position:relative; display:flex; flex-direction:column; overflow:hidden; }
-        .print-body { flex:1; }
+        .print-body { flex:1; overflow:hidden; }
         .p-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:18px; }
         .p-hinfo { text-align:right; font-size:11px; color:#000; line-height:1.7; }
         .p-div { border:none; border-top:2px solid #000; margin:14px 0; }
         .p-gdiv { border:none; border-top:1px solid #555; margin:14px 0; }
         .p-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#000; margin-bottom:5px; }
-        .p-footer { margin-top:auto; padding-top:60px; }
+        .p-footer { margin-top:auto; padding-top:24px; flex-shrink:0; }
     </style>
 </head>
 <body>
@@ -264,7 +264,7 @@
                     <button onclick="app.novaReceita()" class="btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Receita</button>
                 </div>
                 <div class="card" style="overflow:hidden;">
-                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="rec-search" placeholder="Buscar paciente ou médico..." oninput="app.renderReceitaList()"></div></div>
+                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="rec-search" placeholder="Buscar paciente ou médico..." oninput="ui.recPage=1; app.renderReceitaList()"></div></div>
                     <div id="rec-empty" class="empty-state" style="display:none;">Nenhuma receita encontrada</div>
                     <table class="data-table" id="rec-table">
                         <thead><tr><th>#</th><th>Data</th><th>Paciente</th><th>Médico</th><th>CRM</th><th style="text-align:center;">Ações</th></tr></thead>
@@ -411,7 +411,7 @@
                     <button onclick="app.novaControlada()" class="btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Receita</button>
                 </div>
                 <div class="card" style="overflow:hidden;">
-                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="ctrl-search" placeholder="Buscar paciente ou médico..." oninput="app.renderControladaList()"></div></div>
+                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="ctrl-search" placeholder="Buscar paciente ou médico..." oninput="ui.ctrlPage=1; app.renderControladaList()"></div></div>
                     <div id="ctrl-empty" class="empty-state" style="display:none;">Nenhuma receita controlada encontrada</div>
                     <table class="data-table" id="ctrl-table">
                         <thead><tr><th>#</th><th>Data</th><th>Paciente</th><th>Médico</th><th>CRM</th><th style="text-align:center;">Ações</th></tr></thead>
@@ -500,10 +500,14 @@
             <div id="form-list-view">
                 <div class="section-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
                     <div><h1 style="font-size:20px;font-weight:700;color:#013425;">Fórmulas Padrão</h1><p style="font-size:13px;color:#888;">Receitas pré-configuradas e editáveis</p></div>
-                    <button onclick="app.novaFormula()" class="btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Fórmula</button>
+                    <div style="display:flex;gap:8px;">
+                        <button onclick="app.el('import-excel-formulas-input').click()" class="btn-ghost"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg> Importar Excel</button>
+                        <input type="file" id="import-excel-formulas-input" accept=".xlsx" style="display:none;" onchange="app.importarExcelFormulas(this)">
+                        <button onclick="app.novaFormula()" class="btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Fórmula</button>
+                    </div>
                 </div>
                 <div class="card" style="overflow:hidden;">
-                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="form-search" placeholder="Buscar fórmula..." oninput="app.renderFormulaList()"></div></div>
+                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="form-search" placeholder="Buscar fórmula..." oninput="ui.formPage=1; app.renderFormulaList()"></div></div>
                     <div id="form-empty" class="empty-state" style="display:none;">Nenhuma fórmula cadastrada</div>
                     <div id="form-lista"></div>
                     <div class="pagination" id="form-pag" style="display:none;"></div>
@@ -583,7 +587,16 @@
 
         <!-- ===== MEDICAMENTOS ===== -->
         <section id="view-medicamentos" style="display:none;">
-            <div style="margin-bottom:20px;"><h1 style="font-size:20px;font-weight:700;color:#013425;">Medicamentos</h1><p style="font-size:13px;color:#888;">Cadastro com nome, dosagem e unidade</p></div>
+            <div style="margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;" class="section-header">
+                <div><h1 style="font-size:20px;font-weight:700;color:#013425;">Medicamentos</h1><p style="font-size:13px;color:#888;">Cadastro com nome, dosagem e unidade</p></div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <label for="import-excel-input" class="btn-ghost" style="cursor:pointer;padding:9px 14px;font-size:14px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        Importar Excel
+                    </label>
+                    <input type="file" id="import-excel-input" accept=".xlsx" style="display:none;" onchange="app.importarExcelMedicamentos(this)">
+                </div>
+            </div>
             <div class="grid-med">
                 <div class="card" style="padding:20px;">
                     <h3 id="med-form-title" style="font-size:15px;font-weight:700;color:#013425;margin-bottom:16px;">Novo Medicamento</h3>
@@ -618,7 +631,7 @@
                     </div>
                 </div>
                 <div class="card" style="overflow:hidden;">
-                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="med-search" placeholder="Buscar medicamento..." oninput="app.renderMedicamentos()"></div></div>
+                    <div class="search-wrap"><div class="search-row"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" id="med-search" placeholder="Buscar medicamento..." oninput="ui.medPage=1; app.renderMedicamentos()"></div></div>
                     <div id="med-empty" class="empty-state" style="display:none;">Nenhum medicamento cadastrado</div>
                     <table class="data-table" id="med-table">
                         <thead><tr><th>Nome</th><th>Dosagem</th><th style="text-align:center;width:90px;">Ações</th></tr></thead>
@@ -770,6 +783,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
